@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 streamlit = "*"
-pydantic = "*"
 pandas = "*"
 numpy = "*"
 
