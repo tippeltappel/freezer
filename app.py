@@ -28,9 +28,9 @@ class Unit:
 
 @dataclass
 class Freezer:
-    food:List[Food]
-    categories:List[Category]
-    units:List[Unit]
+    food:[Food]
+    categories:[Category]
+    units:[Unit]
 
 
 def enter_food():
@@ -73,9 +73,8 @@ def app():
     st.set_page_config(
         page_title="Gefrierschrank", page_icon=":snowflake:")
     # init session variables
+    st.session_state
     freezer=Freezer(food=[],categories=[],units=[])
-    st.write("Freezer")
-    st.write(freezer.food)
     if 'freezer' not in st.session_state:
         st.session_state.freezer = freezer
     freezer= st.session_state.freezer
@@ -85,8 +84,8 @@ def app():
     st.title("Inhaltsverzeichnis")
     task = st.radio("Was willst Du tun?",["Einfrieren","Auftauen"],horizontal=True,label_visibility="collapsed")
     if task =="Einfrieren":
-        pass
-        #add_food(freezer.food)
+        
+        add_food(freezer.food)
     else:
         st.write("entnehmen")
 
