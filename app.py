@@ -1,69 +1,77 @@
 # app.py
-from dataclasses import dataclass
 import streamlit as st
+from dataclasses import dataclass
 from datetime import date, datetime
-from typing import List
+
 
 @dataclass
 class Food:
-    category:str
-    name:str
-    brand:str
-    size_initial:int
-    unit:str
-    packing:str
-    frozen_on:str
-    best_before:str
-    ean:str
+    category: str
+    name: str
+    brand: str
+    size_initial: int
+    unit: str
+    packing: str
+    frozen_on: str
+    best_before: str
+    ean: str
+
 
 @dataclass
 class Category:
-    name:str
-    rank:int
+    name: str
+    rank: int
+
 
 @dataclass
 class Unit:
-    name:str
-    rank:int        
+    name: str
+    rank: int
+
 
 @dataclass
 class Freezer:
-    food:[Food]
-    categories:[Category]
-    units:[Unit]
+    foods: list[Food]
+    categories: list[Category]
+    units: list[Unit]
 
 
 def enter_food():
-    with st.form("enter_food",clear_on_submit=True):
-        c1,c2,c3=st.columns([1,2,1])
-        category=c1.text_input("Lebensmittelart",placeholder="Gemüse")
-        name=c2.text_input("Lebensmittel",placeholder="grüne Bohnen")
-        brand=c3.text_input("Marke", placeholder="Hofgut")
-        c1,c2,c3=st.columns(3)        
-        size_initial=c1.number_input("Packungsgröße",step=25)
-        unit=c2.text_input("Einheit",placeholder="gr")
-        packing=c3.text_input("Verpackungsart",placeholder="Tüte")
-        c1,c2,c3=st.columns(3)
-        frozen_on=c1.text_input("Eingefroren am:",max_chars=10, placeholder="2022-08-22")
-        best_before=c2.text_input("Haltbar bis::",max_chars=10,placeholder="2022-11-21")
-        ean=c3.text_input("EAN",max_chars=13)
-        submitted=st.form_submit_button("Speichern")
-    
-    food = Food(category,name,brand,size_initial,unit,packing,frozen_on,best_before,ean)
-    return submitted,food   
-    
+    with st.form("enter_food", clear_on_submit=True):
+        c1, c2, c3 = st.columns([1, 2, 1])
+        category = c1.text_input("Lebensmittelart", placeholder="Gemüse")
+        name = c2.text_input("Lebensmittel", placeholder="grüne Bohnen")
+        brand = c3.text_input("Marke", placeholder="Hofgut")
+        c1, c2, c3 = st.columns(3)
+        size_initial = c1.number_input("Packungsgröße", step=25)
+        unit = c2.text_input("Einheit", placeholder="gr")
+        packing = c3.text_input("Verpackungsart", placeholder="Tüte")
+        c1, c2, c3 = st.columns(3)
+        frozen_on = c1.text_input(
+            "Eingefroren am:", max_chars=10, placeholder="2022-08-22")
+        best_before = c2.text_input(
+            "Haltbar bis::", max_chars=10, placeholder="2022-11-21")
+        ean = c3.text_input("EAN", max_chars=13)
+        submitted = st.form_submit_button("Speichern")
 
-def add_food(food_list):
+    food = Food(category, name, brand, size_initial, unit,
+                packing, frozen_on, best_before, ean)
+    # ToDo: validation of food input
+    return submitted, food
+
+
+def add_food(freezer):
     st.header("Einfrieren")
-    add_type=st.radio("Wie hinzufügen?",["Neu","Duplizieren"], horizontal=True, label_visibility="collapsed")
-    if add_type=="Neu":
+    add_type = st.radio("Wie hinzufügen?", [
+                        "Neu", "Duplizieren"], horizontal=True, label_visibility="collapsed")
+    if add_type == "Neu":
         result = enter_food()
         submitted = result[0]
         food = result[1]
         if submitted:
-            st.write(food)
-            food_list.append(food)
-            st.session_state.freezer=food_list
+            freezer.foods.append(food)
+            st.session_state.freezer = freezer
+            st.write(freezer.foods)
     else:
         pass
 
@@ -74,22 +82,21 @@ def app():
         page_title="Gefrierschrank", page_icon=":snowflake:")
     # init session variables
     st.session_state
-    freezer=Freezer(food=[],categories=[],units=[])
+    freezer = Freezer
+    freezer.foods = []
     if 'freezer' not in st.session_state:
         st.session_state.freezer = freezer
-    freezer= st.session_state.freezer
-    st.session_state
+    freezer = st.session_state.freezer
+    st.session_state.freezer
 
     # page title & header
     st.title("Inhaltsverzeichnis")
-    task = st.radio("Was willst Du tun?",["Einfrieren","Auftauen"],horizontal=True,label_visibility="collapsed")
-    if task =="Einfrieren":
-        
-        add_food(freezer.food)
+    task = st.radio("Was willst Du tun?", [
+                    "Einfrieren", "Auftauen"], horizontal=True, label_visibility="collapsed")
+    if task == "Einfrieren":
+        add_food(freezer)
     else:
         st.write("entnehmen")
-
-
 
 
 if __name__ == "__main__":
@@ -261,5 +268,3 @@ class Participant(Trip):
        return round_up(
             self.number_of_nights * self.trip.boat_rate_by_participant_night)
 """
-
-
