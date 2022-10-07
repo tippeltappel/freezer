@@ -2,6 +2,8 @@
 import streamlit as st
 from dataclasses import dataclass
 from datetime import date, datetime
+import json
+from json import JSONEncoder
 
 
 @dataclass
@@ -36,7 +38,26 @@ class Freezer:
     units: list[Unit]
 
 
-def enter_food():
+class FreezerEncoder(JSONEncoder):
+    def default(self, freezer):
+        return ({"foods": freezer.foods, "units": freezer.units, "categories": freezer.categories})
+
+
+def save_obj_to_json_file(obj, file_name, custom_encoder):
+    with open(file_name, "w") as f:
+        json.dump(obj, f, ensure_ascii=False, indent=4, cls=custom_encoder)
+
+
+def load_freezer_obj_from_file(file_name, obj):
+    with open(file_name, "r") as f:
+        dict_data = json.load(f)
+    obj.foods = dict_data["foods"]
+    obj.units = dict_data["units"]
+    obj.categories = dict_data["categories"]
+    return obj
+
+
+def enter_food(freezer):
     with st.form("enter_food", clear_on_submit=True):
         c1, c2, c3 = st.columns([1, 2, 1])
         category = c1.text_input("Lebensmittelart", placeholder="Gemüse")
@@ -52,12 +73,13 @@ def enter_food():
         best_before = c2.text_input(
             "Haltbar bis::", max_chars=10, placeholder="2022-11-21")
         ean = c3.text_input("EAN", max_chars=13)
-        submitted = st.form_submit_button("Speichern")
-
-    food = Food(category, name, brand, size_initial, unit,
-                packing, frozen_on, best_before, ean)
-    # ToDo: validation of food input
-    return submitted, food
+        if st.form_submit_button("Speichern"):
+            # ToDo: validation of food input
+            food = Food(category, name, brand, size_initial, unit,
+                        packing, frozen_on, best_before, ean)
+            freezer.foods.append(food)
+            st.session_state.freezer = freezer
+            st.write(freezer.foods)
 
 
 def add_food(freezer):
@@ -65,13 +87,7 @@ def add_food(freezer):
     add_type = st.radio("Wie hinzufügen?", [
                         "Neu", "Duplizieren"], horizontal=True, label_visibility="collapsed")
     if add_type == "Neu":
-        result = enter_food()
-        submitted = result[0]
-        food = result[1]
-        if submitted:
-            freezer.foods.append(food)
-            st.session_state.freezer = freezer
-            st.write(freezer.foods)
+        enter_food(freezer)
     else:
         pass
 
@@ -80,14 +96,26 @@ def app():
     # browser tab title & favicon, "st.set_page_config" has to be first streamlit command in script
     st.set_page_config(
         page_title="Gefrierschrank", page_icon=":snowflake:")
-    # init session variables
+
+    # initialize app
     st.session_state
-    freezer = Freezer
-    freezer.foods = []
-    if 'freezer' not in st.session_state:
-        st.session_state.freezer = freezer
-    freezer = st.session_state.freezer
-    st.session_state.freezer
+    if 'app_initialized' not in st.session_state:
+        freezer = Freezer(foods=[], units=[], categories=[])
+        st.session_state_freezer_file = "data/freezer.json"
+        try:
+            freezer = load_freezer_obj_from_file(
+                st.session_state.freezer_file, freezer)
+        except:
+            st.session_state.freezer = ""
+        finally:
+            st.session_state.app_initialized = True
+
+    else:
+        freezer = st.session_state.freezer
+        print(freezer)
+        print(freezer.foods)
+        print(freezer.units)
+        print(freezer.categories)
 
     # page title & header
     st.title("Inhaltsverzeichnis")
@@ -97,6 +125,12 @@ def app():
         add_food(freezer)
     else:
         st.write("entnehmen")
+
+    # end session
+    if st.button("Sitzung beenden"):
+        save_obj_to_json_file(
+            freezer, st.session_state.freezer_file, FreezerEncoder)
+        st.balloons()
 
 
 if __name__ == "__main__":

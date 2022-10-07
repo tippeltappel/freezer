@@ -1,4 +1,18 @@
 {
+    "foods": [
+        {
+            "name": "grüne Bohnen",
+            "brand": "Hofgut",
+            "size_initial": "750",
+            "unit": "gr."
+        },
+        {
+            "name": "Pizza Hawaii",
+            "brand": "Dr.Oetker",
+            "size_initial": "1",
+            "unit": "St."
+        }
+    ],
     "units": [
         {
             "name": "ml",
