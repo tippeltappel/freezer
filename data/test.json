@@ -1,1 +1,22 @@
-{"py/type": "__main__.Freezer"}
+{
+    "units": [
+        {
+            "name": "ml",
+            "rank": 88
+        },
+        {
+            "name": "gr",
+            "rank": 88
+        }
+    ],
+    "categories": [
+        {
+            "name": "Gemüse",
+            "rank": 11
+        },
+        {
+            "name": "Fleisch",
+            "rank": 22
+        }
+    ]
+}
