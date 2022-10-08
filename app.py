@@ -78,8 +78,8 @@ def enter_food(freezer):
             food = Food(category, name, brand, size_initial, unit,
                         packing, frozen_on, best_before, ean)
             freezer.foods.append(food)
-            st.session_state.freezer = freezer
-            st.write(freezer.foods)
+            st.session_state.food_list = json.dumps(freezer.foods, indent=4)
+            st.json(freezer.foods)
 
 
 def add_food(freezer):
@@ -101,21 +101,18 @@ def app():
     st.session_state
     if 'app_initialized' not in st.session_state:
         freezer = Freezer(foods=[], units=[], categories=[])
-        st.session_state_freezer_file = "data/freezer.json"
+        st.session_state.freezer_file = "data/freezer.json"
         try:
             freezer = load_freezer_obj_from_file(
                 st.session_state.freezer_file, freezer)
         except:
-            st.session_state.freezer = ""
+            pass
         finally:
             st.session_state.app_initialized = True
+            st.session_state.food_list = ""
 
     else:
-        freezer = st.session_state.freezer
-        print(freezer)
-        print(freezer.foods)
-        print(freezer.units)
-        print(freezer.categories)
+        freezer.foods = json.loads(st.session_state.food_list)
 
     # page title & header
     st.title("Inhaltsverzeichnis")
