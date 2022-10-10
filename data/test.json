@@ -1,17 +1,29 @@
 {
     "foods": [
         {
+            "category":"Gemüse",
             "name": "grüne Bohnen",
             "brand": "Hofgut",
             "size_initial": "750",
-            "unit": "gr."
+            "size_remaining":"500",
+            "unit": "gr",
+            "packing":"Box",
+            "frozen_on":"2022-03-14",
+            "best_before":"2023-03-13",
+            "ean":"1234567890123"
         },
         {
+            "category":"Pizza",
             "name": "Pizza Hawaii",
             "brand": "Dr.Oetker",
             "size_initial": "1",
-            "unit": "St."
-        }
+            "size_remaining":"1",
+            "unit": "St",
+            "packing":"ohne",
+            "frozen_on":"2022-06-17",
+            "best_before":"2022-09-16",
+            "ean":"9876543210321"
+        }    
     ],
     "units": [
         {
@@ -19,14 +31,22 @@
             "rank": 88
         },
         {
+            "name": "St",
+            "rank": 33
+        },
+        {
             "name": "gr",
-            "rank": 88
+            "rank": 77
         }
     ],
     "categories": [
         {
             "name": "Gemüse",
             "rank": 11
+        },
+        {
+            "name": "Pizza",
+            "rank": 33
         },
         {
             "name": "Fleisch",
