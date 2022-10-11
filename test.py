@@ -2,13 +2,7 @@
 import json
 from typing import List
 
-
-def save_obj_to_json_file(obj, file_name, custom_encoder):
-    with open(file_name, "w") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=4, cls=custom_encoder)
-
-
- # load a dictionary from file with the keys 'foods', 'units' and 'categories'
+# load a dictionary from file with the keys 'foods', 'units' and 'categories'
 freezer_file = "data/test.json"
 with open(freezer_file, "r") as f:
     data = json.load(f)

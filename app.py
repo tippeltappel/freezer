@@ -16,7 +16,8 @@ class Food:
     category: str
     name: str
     brand: str
-    size_initial: int
+    size_initial: float
+    size_remaining: float
     unit: str
     packing: str
     frozen_on: str
@@ -80,11 +81,11 @@ def enter_food(freezer):
         ean = c3.text_input("EAN", max_chars=13)
         if st.form_submit_button("Speichern"):
             # ToDo: validation of food input
-            food = Food(category, name, brand, size_initial, unit,
+            food = Food(category, name, brand, size_initial, size_initial, unit,
                         packing, frozen_on, best_before, ean)
-            freezer.foods.append(food)
-            st.session_state.food_list = json.dumps(freezer.foods, indent=4)
-            st.json(freezer.foods)
+            # freezer.foods.append(food)
+            # st.session_state.food_list = json.dumps(freezer.foods, indent=4)
+            # st.json(freezer.foods)
 
 
 def add_food(freezer):
@@ -106,11 +107,17 @@ def app():
     st.session_state
     if 'app_initialized' not in st.session_state:
         freezer = Freezer(foods=[], units=[], categories=[])
-        st.session_state.freezer_file = "data/freezer.json"
+        freezer_file = "data/test.json"
         try:
-            freezer = load_freezer_obj_from_file(
-                st.session_state.freezer_file, freezer)
+            # load a dictionary from file with the keys 'foods', 'units' and 'categories'
+            with open(freezer_file, "r") as f:
+                data = json.load(f)
+            # extract values of the 3 dictionaries which are in turn lists of dictionaries
+            food_list = data['foods']
+            unit_list = data['units']
+            category_list = data['categories']
         except:
+            st.info("Willkommen bei der ersten Benutzung dieser App!")
             pass
         finally:
             st.session_state.app_initialized = True
@@ -137,170 +144,3 @@ def app():
 
 if __name__ == "__main__":
     app()
-
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@dataclass
-class Unit:
-    name:str
-    rank:int
-
-units = ["ml","gr","Stck"]    
-
-def settings_units(units):
-    # page title & header
-    st.title("Einstellungen")
-    st.subheader("Einheiten")
-
-    unit = st.selectbox("Einheiten",["ml","gr","Stck"])
-
-    st.write(unit)
-
-    with st.container():
-        st.text_input("Einheit",placeholder="z.B. Kg oder ml")
-        st.number_input("Rang",min_value=1,max_value=9,value=9,step=1)
-        
-
-
-
-
-class Trip:
-    def __init__(self) -> None:
-        # input data from trip section
-        self.description = ""
-        self.boat = ""
-        self.first_day = date.today()
-        self.last_day = date.today() + timedelta(days=14)
-        self.number_of_participants = 0
-        # data derived from trip section
-        self._number_of_nights = 0
-        self._boat_rate = 0
-        self._max_boat_total = 0
-        # input data from participants section
-        self.participants = []
-        # data derived from participants section
-        self._participants_nights = 0
-        self._participants_nights_om = 0
-        self._boat_rate_by_participant_night = 0
-        self._is_skipper_discount_entitled = False
-        self._total = 0
-        # input data from skipper section
-        self.skipper = ""
-        self.skipper_IBAN = ""
-        self.skipper_BIC = ""
-        self.is_skipper_discount_desired = False
-
-    def __str__(self):
-        return f"({self.description},{self.boat},{self.first_day},{self.last_day},{self.number_of_participants},{self.number_of_nights},{self.boat_rate},{self.max_boat_total},{self.participants_nights},{self.participants_nights_om},{self.boat_rate_by_participant_night},{self.is_skipper_discount_entitled},{self.total},{self.skipper},{self.skipper_IBAN},{self.skipper_BIC},{self.is_skipper_discount_desired})"
-
-    @property
-    def number_of_nights(self):
-        return (self.last_day - self.first_day).days
-
-    @property
-    def boat_rate(self):
-        return Bootspauschalen.get(self.boat)
-
-    @property
-    def max_boat_total(self):
-        return self.boat_rate * self.number_of_nights
-
-    @property
-    def participants_nights(self):
-        return sum([participant.number_of_nights for participant in self.participants])
-
-    @property
-    def participants_nights_om(self):
-        return sum(
-            [participant.number_of_nights_om for participant in self.participants]
-        )
-
-    @property
-    def boat_rate_by_participant_night(self):
-        return self.max_boat_total / self.participants_nights
-
-    @property
-    def total(self):
-        return sum([participant.boat_total for participant in self.participants]) + sum(
-            [participant.extra_total[0] for participant in self.participants]
-        )
-
-    @property
-    def is_skipper_discount_entitled(self):
-        if self.participants_nights_om / self.participants_nights >= 0.5:
-            return True
-        else:
-            return False
-
-
-class Participant(Trip):
-    def __init__(self, trip) -> None:
-        # input data from participants section
-        self.name = ""
-        self.type = ""
-        self.first_day = trip.first_day
-        self.last_day = trip.last_day
-        # data derived from participants section
-        self._number_of_nights = 0
-        self._number_of_nights_om = 0
-        self._rate_group = ""
-        self._extra_rate = 0
-        # this is a tuple which returns a foot note as second item in case skipper discount is applied
-        self._extra_total = 0, ""
-        self._boat_total = 0
-        # data derived from trip section
-        self.trip = trip
-
-    def __str__(self):
-        return f"({self.name},{self.type},{self.first_day},{self.last_day},{self.number_of_nights},{self.number_of_nights_om},{self.rate_group},{self.extra_rate},{self.extra_total},{self.boat_total})"
-
-    @property
-    def number_of_nights(self):
-        return (self.last_day - self.first_day).days
-
-    @property
-    def number_of_nights_om(self):
-        if self.type == "OM":
-            return self.number_of_nights
-        else:
-            return 0
-
-    @property
-    def rate_group(self):
-        return Beitragsstufen.get(self.type)
-
-    @property
-    def extra_rate(self):
-        return Beitragsstufenaufschläge.get(self.rate_group + " " + self.trip.boat)
-
-    @property
-    def extra_total(self):
-        # this is a tuple which returns a foot note as second item in case skipper discount is applied
-        if (
-            self.trip.skipper == self.name
-            and self.trip.is_skipper_discount_entitled
-            and self.trip.is_skipper_discount_desired
-        ):
-            return (self.number_of_nights * 0), "(*)"
-        else:
-            return (self.number_of_nights * self.extra_rate), ""
-
-    @property
-    def boat_total(self):
-       return round_up(
-            self.number_of_nights * self.trip.boat_rate_by_participant_night)
-"""
