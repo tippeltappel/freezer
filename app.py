@@ -1,4 +1,9 @@
 # app.py
+"""
+Objekt mit Attributen aus simplen Datentypen kann mit obj.__dict__ zu einem Dictionary konvertiert werden.
+Umgekehrt kann ein Dictionary mit obj=Obj(**dict) wieder in ein Objekt überführt werden.
+Listen sollten mit obj=Obj(*list) in ein Objekt überführt werden können.
+"""
 import streamlit as st
 from dataclasses import dataclass
 from datetime import date, datetime
