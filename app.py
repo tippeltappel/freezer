@@ -49,18 +49,9 @@ class FreezerEncoder(JSONEncoder):
         return ({"foods": freezer.foods, "units": freezer.units, "categories": freezer.categories})
 
 
-def save_obj_to_json_file(obj, file_name, custom_encoder):
+def save_freezer(obj, file_name, custom_encoder):
     with open(file_name, "w") as f:
         json.dump(obj, f, ensure_ascii=False, indent=4, cls=custom_encoder)
-
-
-def load_freezer_obj_from_file(file_name, obj):
-    with open(file_name, "r") as f:
-        dict_data = json.load(f)
-    obj.foods = dict_data["foods"]
-    obj.units = dict_data["units"]
-    obj.categories = dict_data["categories"]
-    return obj
 
 
 def enter_food(freezer):
@@ -83,53 +74,68 @@ def enter_food(freezer):
             # ToDo: validation of food input
             food = Food(category, name, brand, size_initial, size_initial, unit,
                         packing, frozen_on, best_before, ean)
-            # freezer.foods.append(food)
-            # st.session_state.food_list = json.dumps(freezer.foods, indent=4)
-            # st.json(freezer.foods)
+            freezer.foods.append(food.__dict__)
+            st.session_state.food_list = freezer.foods
 
 
 def add_food(freezer):
     st.header("Einfrieren")
     add_type = st.radio("Wie hinzufügen?", [
-                        "Neu", "Duplizieren"], horizontal=True, label_visibility="collapsed")
+                        "Neu", "Duplizieren"], horizontal=True, label_visibility="visible")
     if add_type == "Neu":
         enter_food(freezer)
+        pass
     else:
         pass
 
 
 def app():
+    freezer = Freezer
+    freezer_file = "data/test.json"
     # browser tab title & favicon, "st.set_page_config" has to be first streamlit command in script
     st.set_page_config(
         page_title="Gefrierschrank", page_icon=":snowflake:")
-
     # initialize app
-    st.session_state
     if 'app_initialized' not in st.session_state:
-        freezer = Freezer(foods=[], units=[], categories=[])
-        freezer_file = "data/test.json"
+        # stete: App was just opened
         try:
+            # state: App has been used before with data probably saved to file
             # load a dictionary from file with the keys 'foods', 'units' and 'categories'
             with open(freezer_file, "r") as f:
                 data = json.load(f)
             # extract values of the 3 dictionaries which are in turn lists of dictionaries
-            food_list = data['foods']
-            unit_list = data['units']
-            category_list = data['categories']
+            freezer.foods = data['foods']
+            freezer.units = data['units']
+            freezer.categories = data['categories']
+            # save freezer attributes in session state
+            st.session_state.food_list = freezer.foods
+            st.session_state.unit_list = freezer.units
+            st.session_state.category_list = freezer.categories
+            st.session_state
+
         except:
-            st.info("Willkommen bei der ersten Benutzung dieser App!")
-            pass
+            # state: App used for the first time
+            st.success("Willkommen bei der ersten Benutzung dieser App!")
+            st.session_state.food_list = []
+            st.session_state.unit_list = []
+            st.session_state.category_list = []
+            st.session_state
+
         finally:
             st.session_state.app_initialized = True
-            st.session_state.food_list = ""
 
     else:
-        freezer.foods = json.loads(st.session_state.food_list)
+        # state: App was refreshed after data entry
+        # load data from session state
+        freezer.foods = st.session_state.food_list
+        freezer.units = st.session_state.unit_list
+        freezer.categories = st.session_state.category_list
+        st.session_state
 
     # page title & header
     st.title("Inhaltsverzeichnis")
     task = st.radio("Was willst Du tun?", [
-                    "Einfrieren", "Auftauen"], horizontal=True, label_visibility="collapsed")
+                    "Einfrieren", "Auftauen"], horizontal=True, label_visibility="visible")
     if task == "Einfrieren":
         add_food(freezer)
     else:
@@ -137,8 +143,8 @@ def app():
 
     # end session
     if st.button("Sitzung beenden"):
-        save_obj_to_json_file(
-            freezer, st.session_state.freezer_file, FreezerEncoder)
+        save_freezer(freezer, freezer_file, FreezerEncoder)
+        del st.session_state.app_initialized
         st.balloons()
 
 
