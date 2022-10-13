@@ -1,29 +1,57 @@
 {
     "foods": [
         {
-            "category":"Gemüse",
+            "category": "Gemüse",
             "name": "grüne Bohnen",
             "brand": "Hofgut",
             "size_initial": "750",
-            "size_remaining":"500",
+            "size_remaining": "500",
             "unit": "gr",
-            "packing":"Box",
-            "frozen_on":"2022-03-14",
-            "best_before":"2023-03-13",
-            "ean":"1234567890123"
+            "packing": "Box",
+            "frozen_on": "2022-03-14",
+            "best_before": "2023-03-13",
+            "ean": "1234567890123",
+            "bin": "1"
         },
         {
-            "category":"Pizza",
+            "category": "Pizza",
             "name": "Pizza Hawaii",
             "brand": "Dr.Oetker",
             "size_initial": "1",
-            "size_remaining":"1",
+            "size_remaining": "1",
             "unit": "St",
-            "packing":"ohne",
-            "frozen_on":"2022-06-17",
-            "best_before":"2022-09-16",
-            "ean":"9876543210321"
-        }    
+            "packing": "ohne",
+            "frozen_on": "2022-06-17",
+            "best_before": "2022-09-16",
+            "ean": "9876543210321",
+            "bin": "2"
+        },
+        {
+            "category": "Fleisch",
+            "name": "Steak",
+            "brand": "",
+            "size_initial": 1,
+            "size_remaining": 1,
+            "unit": "kg",
+            "packing": "",
+            "frozen_on": "",
+            "best_before": "",
+            "ean": "",
+            "bin": "3"
+        },
+        {
+            "category": "Obst",
+            "name": "Blaubeeren",
+            "brand": "Bio",
+            "packing": "Box",
+            "size_initial": 500,
+            "size_remaining": 500,
+            "unit": "gr",
+            "ean": "",
+            "frozen_on": "2021-12-24",
+            "best_before": "2022-02-28",
+            "bin": 4
+        }
     ],
     "units": [
         {

@@ -16,13 +16,14 @@ class Food:
     category: str
     name: str
     brand: str
+    packing: str
     size_initial: float
     size_remaining: float
     unit: str
-    packing: str
+    ean: str
     frozen_on: str
     best_before: str
-    ean: str
+    bin: int
 
 
 @dataclass
@@ -54,6 +55,12 @@ def save_freezer(obj, file_name, custom_encoder):
         json.dump(obj, f, ensure_ascii=False, indent=4, cls=custom_encoder)
 
 
+def quit_app(freezer, freezer_file):
+    save_freezer(freezer, freezer_file, FreezerEncoder)
+    del st.session_state.app_initialized
+    st.balloons()
+
+
 def enter_food(freezer):
     with st.form("enter_food", clear_on_submit=True):
         c1, c2, c3 = st.columns([1, 2, 1])
@@ -61,25 +68,28 @@ def enter_food(freezer):
         name = c2.text_input("Lebensmittel", placeholder="grüne Bohnen")
         brand = c3.text_input("Marke", placeholder="Hofgut")
         c1, c2, c3 = st.columns(3)
-        size_initial = c1.number_input("Packungsgröße", step=25)
-        unit = c2.text_input("Einheit", placeholder="gr")
-        packing = c3.text_input("Verpackungsart", placeholder="Tüte")
-        c1, c2, c3 = st.columns(3)
-        frozen_on = c1.text_input(
+        packing = c1.text_input("Verpackungsart", placeholder="Tüte")
+        size_initial = c2.number_input("Packungsgröße", step=25)
+        unit = c3.text_input("Einheit", placeholder="gr")
+
+        c1, c2, c3, c4 = st.columns(4)
+        ean = c1.text_input("EAN", max_chars=13)
+        frozen_on = c2.text_input(
             "Eingefroren am:", max_chars=10, placeholder="2022-08-22")
-        best_before = c2.text_input(
-            "Haltbar bis::", max_chars=10, placeholder="2022-11-21")
-        ean = c3.text_input("EAN", max_chars=13)
+        best_before = c3.text_input(
+            "Haltbar bis:", max_chars=10, placeholder="2022-11-21")
+        bin = c4.number_input("Fach", step=1)
+
         if st.form_submit_button("Speichern"):
             # ToDo: validation of food input
-            food = Food(category, name, brand, size_initial, size_initial, unit,
-                        packing, frozen_on, best_before, ean)
+            food = Food(category, name, brand, packing, size_initial, size_initial,
+                        unit, ean, frozen_on, best_before, bin)
             freezer.foods.append(food.__dict__)
             st.session_state.food_list = freezer.foods
 
 
 def add_food(freezer):
-    st.header("Einfrieren")
+    st.header("Einlagern")
     add_type = st.radio("Wie hinzufügen?", [
                         "Neu", "Duplizieren"], horizontal=True, label_visibility="visible")
     if add_type == "Neu":
@@ -87,6 +97,45 @@ def add_food(freezer):
         pass
     else:
         pass
+
+
+def edit_food(freezer):
+    st.header("Bearbeiten")
+    foods_index_list = list(range(len(freezer.foods)))
+    i = st.selectbox("Gefriergut auswählen", foods_index_list,
+                     format_func=lambda i: freezer.foods[i].get('name') + " - " + freezer.foods[i].get('brand') + " - " + freezer.foods[i].get('packing') + " - " + str(freezer.foods[i].get('size_remaining'))+"/" + str(freezer.foods[i].get('size_initial')) + " "+freezer.foods[i].get('unit')+" --> Fach: "+str(freezer.foods[i].get('bin')))
+    food = Food(**freezer.foods[i])
+
+    with st.form("edit_food", clear_on_submit=True):
+        c1, c2, c3 = st.columns([1, 2, 1])
+        category = c1.text_input("Lebensmittelart", food.category)
+        name = c2.text_input("Lebensmittel", food.name)
+        brand = c3.text_input("Marke", food.brand)
+        c1, c2, c3 = st.columns(3)
+        packing = c1.text_input("Verpackungsart", food.packing)
+        size_initial = c2.number_input(
+            "ursprünglicher Packungsgröße", float(food.size_initial), step=1.0)
+        unit = c3.text_input("Einheit", food.unit)
+
+        c1, c2, c3, c4 = st.columns(4)
+        ean = c1.text_input("EAN", food.ean, max_chars=13)
+        frozen_on = c2.text_input(
+            "Eingefroren am:", food.frozen_on, max_chars=10)
+        best_before = c3.text_input(
+            "Haltbar bis:", food.best_before, max_chars=10)
+        bin = c4.number_input("Fach", int(food.bin), step=1)
+
+        size_remaining = st.number_input(
+            "verbleibende Packungsgröße", float(food.size_initial), step=1.0)
+        size_remaining = st.slider(
+            "verbleibende Packungsgröße", float(food.size_remaining), step=1.0)
+
+        if st.form_submit_button("Auslagern"):
+            # ToDo: validation of food input
+            food = Food(category, name, brand, packing, size_initial, size_initial,
+                        unit, ean, frozen_on, best_before, bin)
+            freezer.foods.append(food.__dict__)
+            st.session_state.food_list = freezer.foods
 
 
 def app():
@@ -130,22 +179,20 @@ def app():
         freezer.foods = st.session_state.food_list
         freezer.units = st.session_state.unit_list
         freezer.categories = st.session_state.category_list
-        st.session_state
+        # st.session_state
 
     # page title & header
     st.title("Inhaltsverzeichnis")
     task = st.radio("Was willst Du tun?", [
-                    "Einfrieren", "Auftauen"], horizontal=True, label_visibility="visible")
-    if task == "Einfrieren":
+        "Einlagern", "Auslagern", "Bearbeiten"], horizontal=True, label_visibility="visible")
+    if task == "Einlagern":
         add_food(freezer)
     else:
-        st.write("entnehmen")
+        edit_food(freezer)
 
     # end session
-    if st.button("Sitzung beenden"):
-        save_freezer(freezer, freezer_file, FreezerEncoder)
-        del st.session_state.app_initialized
-        st.balloons()
+    if st.button("Sitzung speichern & beenden"):
+        quit_app(freezer, freezer_file)
 
 
 if __name__ == "__main__":
