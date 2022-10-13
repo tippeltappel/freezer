@@ -185,10 +185,13 @@ def app():
     st.title("Inhaltsverzeichnis")
     task = st.radio("Was willst Du tun?", [
         "Einlagern", "Auslagern", "Bearbeiten"], horizontal=True, label_visibility="visible")
-    if task == "Einlagern":
-        add_food(freezer)
-    else:
-        edit_food(freezer)
+    match task:
+        case "Einlagern":
+            add_food(freezer)
+        case "Auslagern":
+            pass
+        case "Bearbeiten":
+            edit_food(freezer)
 
     # end session
     if st.button("Sitzung speichern & beenden"):
