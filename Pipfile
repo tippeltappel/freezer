@@ -6,9 +6,9 @@ name = "pypi"
 [packages]
 streamlit = "*"
 autopep8 = "*"
+pillow = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.10"
-python_full_version = "3.10.8"
