@@ -91,8 +91,8 @@ def enter_food(freezer):
             "Haltbar bis:", max_chars=10, placeholder="2022-11-21")
         bin = c4.number_input("Fach", step=1)
         # ToDo: validation of food input
-        st.form_submit_button("Speichern", on_click=enter_food_callback, args=[category, name, brand, packing, size_initial, size_remaining,
-                                                                               unit, ean, frozen_on, best_before, bin])
+        st.form_submit_button("Speichern", on_click=enter_food_callback, args=[
+                              category, name, brand, packing, size_initial, size_remaining, unit, ean, frozen_on, best_before, bin])
 
 
 def add_food(freezer):
