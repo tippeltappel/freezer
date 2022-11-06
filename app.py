@@ -62,7 +62,17 @@ def quit_app(freezer, freezer_file):
 
 
 def enter_food(freezer):
+    st.session_state.food_list
     with st.form("enter_food", clear_on_submit=True):
+        def enter_food_callback(category, name, brand, packing, size_initial, size_remaining,
+                                unit, ean, frozen_on, best_before, bin):
+            print(category)
+            print(name)
+            food = Food(category, name, brand, packing, size_initial, size_remaining,
+                        unit, ean, frozen_on, best_before, bin)
+            freezer.foods.append(food.__dict__)
+            st.session_state.food_list = freezer.foods
+
         c1, c2, c3 = st.columns([1, 2, 1])
         category = c1.text_input("Lebensmittelart", placeholder="Gemüse")
         name = c2.text_input("Lebensmittel", placeholder="grüne Bohnen")
@@ -70,6 +80,7 @@ def enter_food(freezer):
         c1, c2, c3 = st.columns(3)
         packing = c1.text_input("Verpackungsart", placeholder="Tüte")
         size_initial = c2.number_input("Packungsgröße", step=25)
+        size_remaining = size_initial
         unit = c3.text_input("Einheit", placeholder="gr")
 
         c1, c2, c3, c4 = st.columns(4)
@@ -79,13 +90,9 @@ def enter_food(freezer):
         best_before = c3.text_input(
             "Haltbar bis:", max_chars=10, placeholder="2022-11-21")
         bin = c4.number_input("Fach", step=1)
-
-        if st.form_submit_button("Speichern"):
-            # ToDo: validation of food input
-            food = Food(category, name, brand, packing, size_initial, size_initial,
-                        unit, ean, frozen_on, best_before, bin)
-            freezer.foods.append(food.__dict__)
-            st.session_state.food_list = freezer.foods
+        # ToDo: validation of food input
+        st.form_submit_button("Speichern", on_click=enter_food_callback, args=[category, name, brand, packing, size_initial, size_remaining,
+                                                                               unit, ean, frozen_on, best_before, bin])
 
 
 def add_food(freezer):
@@ -138,8 +145,6 @@ def edit_food(freezer):
             st.session_state.food_list = freezer.foods
 
 
-
-
 def remove_food(freezer):
     def remove_food_callback(i):
         freezer.foods.pop(i)
@@ -152,8 +157,8 @@ def remove_food(freezer):
     food = Food(**freezer.foods[i])
     st.json(food.__dict__)
 
-    st.button("Auslagern",on_click=remove_food_callback, args=[i])
-        
+    st.button("Auslagern", on_click=remove_food_callback, args=[i])
+
 
 def app():
     freezer = Freezer
