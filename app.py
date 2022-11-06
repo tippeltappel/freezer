@@ -138,18 +138,22 @@ def edit_food(freezer):
             st.session_state.food_list = freezer.foods
 
 
+
+
 def remove_food(freezer):
-    st.header("Auslagen")
+    def remove_food_callback(i):
+        freezer.foods.pop(i)
+        st.session_state.food_list = freezer.foods
+
+    st.header("Auslagern")
     foods_index_list = list(range(len(freezer.foods)))
     i = st.selectbox("Gefriergut auswählen", foods_index_list,
                      format_func=lambda i: freezer.foods[i].get('name') + " - " + freezer.foods[i].get('brand') + " - " + freezer.foods[i].get('packing') + " - " + str(freezer.foods[i].get('size_remaining'))+"/" + str(freezer.foods[i].get('size_initial')) + " "+freezer.foods[i].get('unit')+" --> Fach: "+str(freezer.foods[i].get('bin')))
     food = Food(**freezer.foods[i])
     st.json(food.__dict__)
 
-    if st.button("Auslagern"):
-        freezer.foods.pop(i)
-        st.session_state.food_list = freezer.foods
-
+    st.button("Auslagern",on_click=remove_food_callback, args=[i])
+        
 
 def app():
     freezer = Freezer
