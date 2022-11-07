@@ -61,52 +61,58 @@ def quit_app(freezer, freezer_file):
     st.balloons()
 
 
-def enter_food(freezer):
-    st.session_state.food_list
-    with st.form("enter_food", clear_on_submit=True):
-        def enter_food_callback(category, name, brand, packing, size_initial, size_remaining,
-                                unit, ean, frozen_on, best_before, bin):
-            print(category)
-            print(name)
-            food = Food(category, name, brand, packing, size_initial, size_remaining,
-                        unit, ean, frozen_on, best_before, bin)
-            freezer.foods.append(food.__dict__)
-            st.session_state.food_list = freezer.foods
+def cb_enter_food():
+    food = Food(st.session_state.f1_category,
+                st.session_state.f1_name,
+                st.session_state.f1_brand,
+                st.session_state.f1_packing,
+                st.session_state.f1_size_initial,
+                st.session_state.f1_size_initial,  # default for size_remaining
+                st.session_state.f1_unit,
+                st.session_state.f1_ean,
+                st.session_state.f1_frozen_on,
+                st.session_state.f1_best_before,
+                st.session_state.f1_bin)
 
+    freezer.foods.append(food.__dict__)
+    st.session_state.food_list = freezer.foods
+
+
+def enter_food():
+    with st.form("f1", clear_on_submit=False):
         c1, c2, c3 = st.columns([1, 2, 1])
-        category = c1.text_input("Lebensmittelart", placeholder="Gemüse")
-        name = c2.text_input("Lebensmittel", placeholder="grüne Bohnen")
-        brand = c3.text_input("Marke", placeholder="Hofgut")
+        c1.text_input("Lebensmittelart",
+                      placeholder="Gemüse", key="f1_category")
+        c2.text_input("Lebensmittel",
+                      placeholder="grüne Bohnen", key="f1_name")
+        c3.text_input("Marke", placeholder="Hofgut", key="f1_brand")
         c1, c2, c3 = st.columns(3)
-        packing = c1.text_input("Verpackungsart", placeholder="Tüte")
-        size_initial = c2.number_input("Packungsgröße", step=25)
-        size_remaining = size_initial
-        unit = c3.text_input("Einheit", placeholder="gr")
-
+        c1.text_input("Verpackungsart", placeholder="Tüte", key="f1_packing")
+        c2.number_input("Packungsgröße", step=25, key="f1_size_initial")
+        c3.text_input("Einheit", placeholder="gr", key="f1_unit")
         c1, c2, c3, c4 = st.columns(4)
-        ean = c1.text_input("EAN", max_chars=13)
-        frozen_on = c2.text_input(
-            "Eingefroren am:", max_chars=10, placeholder="2022-08-22")
-        best_before = c3.text_input(
-            "Haltbar bis:", max_chars=10, placeholder="2022-11-21")
-        bin = c4.number_input("Fach", step=1)
+        c1.text_input("EAN", max_chars=13, key="ean")
+        c2.text_input(
+            "Eingefroren am:", max_chars=10, placeholder="2022-08-22", key="f1_frozen_on")
+        c3.text_input("Haltbar bis:", max_chars=10,
+                      placeholder="2022-11-21", key="f1_best_before")
+        c4.number_input("Fach", step=1, key="f1_bin")
         # ToDo: validation of food input
-        st.form_submit_button("Speichern", on_click=enter_food_callback, args=[
-                              category, name, brand, packing, size_initial, size_remaining, unit, ean, frozen_on, best_before, bin])
+        st.form_submit_button("Speichern", on_click=cb_enter_food)
 
 
-def add_food(freezer):
+def add_food():
     st.header("Einlagern")
     add_type = st.radio("Wie hinzufügen?", [
                         "Neu", "Duplizieren"], horizontal=True, label_visibility="visible")
     if add_type == "Neu":
-        enter_food(freezer)
+        enter_food()
         pass
     else:
         pass
 
 
-def edit_food(freezer):
+def edit_food():
     st.header("Bearbeiten")
     foods_index_list = list(range(len(freezer.foods)))
     i = st.selectbox("Gefriergut auswählen", foods_index_list,
@@ -145,7 +151,7 @@ def edit_food(freezer):
             st.session_state.food_list = freezer.foods
 
 
-def remove_food(freezer):
+def remove_food():
     def remove_food_callback(i):
         freezer.foods.pop(i)
         st.session_state.food_list = freezer.foods
@@ -161,8 +167,6 @@ def remove_food(freezer):
 
 
 def app():
-    freezer = Freezer
-    freezer_file = "data/test.json"
     # browser tab title & favicon, "st.set_page_config" has to be first streamlit command in script
     st.set_page_config(
         page_title="Gefrierschrank", page_icon=":snowflake:")
@@ -209,16 +213,18 @@ def app():
         "Einlagern", "Auslagern", "Bearbeiten"], horizontal=True, label_visibility="visible")
     match task:
         case "Einlagern":
-            add_food(freezer)
+            add_food()
         case "Auslagern":
-            remove_food(freezer)
+            remove_food()
         case "Bearbeiten":
-            edit_food(freezer)
+            edit_food()
 
     # end session
     if st.button("Sitzung speichern & beenden"):
-        quit_app(freezer, freezer_file)
+        quit_app()
 
 
 if __name__ == "__main__":
+    freezer = Freezer
+    freezer_file = "data/test.json"
     app()
