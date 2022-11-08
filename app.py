@@ -60,7 +60,7 @@ class FreezerEncoder(JSONEncoder):
 def init_app():
     # browser tab title & favicon, "st.set_page_config" has to be first streamlit command in script
     st.set_page_config(
-        page_title="Gefrierschrank", page_icon=":snowflake:")
+        page_title="Gefrierschrank", page_icon=":snowflake:", initial_sidebar_state="auto")
     # initialize app
     if 'app_initialized' not in st.session_state:
         # stete: App was just opened
@@ -259,8 +259,12 @@ def quit_app():
 
 def app():
     init_app()
+    with st.sidebar:
+        st.radio("Einstellungen ändern", [
+                 "Kategorien", "Maßeinheiten", "Verpackungen"])
+
     # page title & header
-    st.title("Inhaltsverzeichnis")
+    st.title("Gefrierschrank")
     task = st.radio("Waas du wollen tuun?", [
         "Einlagern", "Auslagern", "Bearbeiten"], horizontal=True, label_visibility="visible")
     match task:
