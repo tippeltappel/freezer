@@ -66,31 +66,14 @@
             "bin": 2
         }
     ],
-    "units": [
+    "units": "[{'name': '-', 'rank': 1}, {'name': 'gr', 'rank': 10}, {'name': 'Stck', 'rank': 20}, {'name': 'ml', 'rank': 30}, {'name': 'l', 'rank': 40}]",
+    "categories": [
         {
             "name": "-",
             "rank": 1
         },
         {
-            "name": "gr",
-            "rank": 10
-        },
-        {
-            "name": "Stck",
-            "rank": 20
-        },
-        {
-            "name": "ml",
-            "rank": 30
-        }
-    ],
-    "categories": [
-        {
-            "name":"-",
-            "rank": 1
-        },
-        {
-            "name":"Pizza",
+            "name": "Pizza",
             "rank": 10
         },
         {
@@ -125,16 +108,6 @@
             "name": "Fertiggerichte",
             "rank": 90
         }
-    ]
-    ,
-    "packings": [
-        {
-            "name": "TÃ¼te",
-            "rank": 10
-        },
-        {
-            "name": "Box",
-            "rank": 20
-        }
-    ]
+    ],
+    "packings": "[{'name': 'Tüte', 'rank': 10}, {'name': 'Box', 'rank': 20}]"
 }

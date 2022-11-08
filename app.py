@@ -244,6 +244,29 @@ def edit_food():
             st.success(st.session_state.food_name +
                        " wurde in der Liste geändert")
 
+def cb_edit_settings(setting):
+    match setting:
+        case "categories":
+            freezer.categories=st.session_state.category_list
+        case "units":
+            freezer.units=st.session_state.unit_list
+        case "packings":
+            freezer.packings=st.session_state.packing_list
+
+
+
+def edit_settings():
+    st.header("Einstellungen bearbeiten")
+    task = st.radio("Wähle zu ändernde Einstellung", [
+        "Kategorien", "Maßeinheiten", "Verpackungen"], horizontal=True, label_visibility="visible")
+    match task:
+        case "Kategorien":
+            st.text_area("Kategorien",freezer.categories,height=200,on_change=cb_edit_settings,args=("categories",),key="category_list")
+        case "Maßeinheiten":
+            st.text_area("Maßeinheiten",freezer.units,height=200,on_change=cb_edit_settings,args=("units",),key="unit_list")
+        case "Verpackungen":
+            st.text_area("Verpackungen",freezer.packings,height=200,on_change=cb_edit_settings,args=("packings",),key="packing_list")
+
 
 def save_freezer(obj, file_name, custom_encoder):
     with open(file_name, "w") as f:
@@ -259,14 +282,10 @@ def quit_app():
 
 def app():
     init_app()
-    with st.sidebar:
-        st.radio("Einstellungen ändern", [
-                 "Kategorien", "Maßeinheiten", "Verpackungen"])
-
     # page title & header
     st.title("Gefrierschrank")
     task = st.radio("Waas du wollen tuun?", [
-        "Einlagern", "Auslagern", "Bearbeiten"], horizontal=True, label_visibility="visible")
+        "Einlagern", "Auslagern", "Bearbeiten","Einstellungen bearbeiten"], horizontal=True, label_visibility="visible")
     match task:
         case "Einlagern":
             add_food()
@@ -274,6 +293,8 @@ def app():
             remove_food()
         case "Bearbeiten":
             edit_food()
+        case "Einstellungen bearbeiten":
+            edit_settings()    
 
     # end session
     if st.button("Sitzung speichern & beenden", type='primary'):
