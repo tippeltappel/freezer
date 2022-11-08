@@ -1,17 +1,17 @@
 {
     "foods": [
         {
-            "category": "Gem�se",
-            "name": "gr�ne Bohnen",
+            "category": "Gemüse",
+            "name": "grüne Bohnen",
             "brand": "Hofgut",
-            "size_initial": "750",
-            "size_remaining": "500",
-            "unit": "gr",
             "packing": "Box",
+            "size_initial": 750.0,
+            "size_remaining": 500.0,
+            "unit": "gr",
+            "ean": "1234567890123",
             "frozen_on": "2022-03-14",
             "best_before": "2023-03-13",
-            "ean": "1234567890123",
-            "bin": "1"
+            "bin": 1
         },
         {
             "category": "Pizza",
@@ -19,7 +19,7 @@
             "brand": "Dr.Oetker",
             "size_initial": "1",
             "size_remaining": "1",
-            "unit": "St",
+            "unit": "Stck",
             "packing": "ohne",
             "frozen_on": "2022-06-17",
             "best_before": "2022-09-16",
@@ -27,38 +27,12 @@
             "bin": "2"
         },
         {
-            "category": "Fleisch",
-            "name": "Steak",
-            "brand": "",
-            "size_initial": 1,
-            "size_remaining": 1,
-            "unit": "kg",
-            "packing": "",
-            "frozen_on": "",
-            "best_before": "",
-            "ean": "",
-            "bin": "3"
-        },
-        {
-            "category": "Obst",
-            "name": "Blaubeeren",
-            "brand": "Bio",
-            "packing": "Box",
-            "size_initial": 500,
-            "size_remaining": 500,
-            "unit": "gr",
-            "ean": "",
-            "frozen_on": "2021-12-24",
-            "best_before": "2022-02-28",
-            "bin": 4
-        },
-        {
             "category": "Obst",
             "name": "Himbeeren",
             "brand": "brand_a",
-            "packing": "T�te",
-            "size_initial": 500,
-            "size_remaining": 500,
+            "packing": "Tüte",
+            "size_initial": 500.0,
+            "size_remaining": 500.0,
             "unit": "ml",
             "ean": "1236549871233",
             "frozen_on": "2022-04-14",
@@ -83,9 +57,9 @@
             "name": "Tiramisue Eis",
             "brand": "Langnese",
             "packing": "Box",
-            "size_initial": 1,
-            "size_remaining": 1,
-            "unit": "l",
+            "size_initial": 750,
+            "size_remaining": 750,
+            "unit": "ml",
             "ean": "9587632587756",
             "frozen_on": "2021-04-12",
             "best_before": "2021-07-11",
@@ -94,30 +68,73 @@
     ],
     "units": [
         {
-            "name": "ml",
-            "rank": 88
-        },
-        {
-            "name": "St",
-            "rank": 33
+            "name": "-",
+            "rank": 1
         },
         {
             "name": "gr",
-            "rank": 77
+            "rank": 10
+        },
+        {
+            "name": "Stck",
+            "rank": 20
+        },
+        {
+            "name": "ml",
+            "rank": 30
         }
     ],
     "categories": [
         {
-            "name": "Gem�se",
-            "rank": 11
+            "name":"-",
+            "rank": 1
         },
         {
-            "name": "Pizza",
-            "rank": 33
+            "name":"Pizza",
+            "rank": 10
+        },
+        {
+            "name": "GemÃ¼se",
+            "rank": 20
+        },
+        {
+            "name": "Fisch",
+            "rank": 30
         },
         {
             "name": "Fleisch",
-            "rank": 22
+            "rank": 40
+        },
+        {
+            "name": "Obst",
+            "rank": 50
+        },
+        {
+            "name": "Brot",
+            "rank": 60
+        },
+        {
+            "name": "KrÃ¤uter/GewÃ¼rze",
+            "rank": 70
+        },
+        {
+            "name": "Kartoffelprodukte",
+            "rank": 80
+        },
+        {
+            "name": "Fertiggerichte",
+            "rank": 90
+        }
+    ]
+    ,
+    "packings": [
+        {
+            "name": "Tüte",
+            "rank": 10
+        },
+        {
+            "name": "Box",
+            "rank": 20
         }
     ]
 }
