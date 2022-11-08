@@ -51,6 +51,45 @@
             "frozen_on": "2021-12-24",
             "best_before": "2022-02-28",
             "bin": 4
+        },
+        {
+            "category": "Obst",
+            "name": "Himbeeren",
+            "brand": "brand_a",
+            "packing": "Tüte",
+            "size_initial": 500,
+            "size_remaining": 500,
+            "unit": "ml",
+            "ean": "1236549871233",
+            "frozen_on": "2022-04-14",
+            "best_before": "2022-07-13",
+            "bin": 4
+        },
+        {
+            "category": "Fleisch",
+            "name": "Lammkeule",
+            "brand": "-",
+            "packing": "-",
+            "size_initial": 1,
+            "size_remaining": 1,
+            "unit": "kg",
+            "ean": "",
+            "frozen_on": "2022-01-01",
+            "best_before": "2023-12-31",
+            "bin": 6
+        },
+        {
+            "category": "Eis",
+            "name": "Tiramisue Eis",
+            "brand": "Langnese",
+            "packing": "Box",
+            "size_initial": 1,
+            "size_remaining": 1,
+            "unit": "l",
+            "ean": "9587632587756",
+            "frozen_on": "2021-04-12",
+            "best_before": "2021-07-11",
+            "bin": 2
         }
     ],
     "units": [

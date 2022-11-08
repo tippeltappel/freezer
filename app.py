@@ -50,15 +50,46 @@ class FreezerEncoder(JSONEncoder):
         return ({"foods": freezer.foods, "units": freezer.units, "categories": freezer.categories})
 
 
-def save_freezer(obj, file_name, custom_encoder):
-    with open(file_name, "w") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=4, cls=custom_encoder)
+def init_app():
+    # browser tab title & favicon, "st.set_page_config" has to be first streamlit command in script
+    st.set_page_config(
+        page_title="Gefrierschrank", page_icon=":snowflake:")
+    # initialize app
+    if 'app_initialized' not in st.session_state:
+        # stete: App was just opened
+        try:
+            # state: App has been used before with data probably saved to file
+            # load a dictionary from file with the keys 'foods', 'units' and 'categories'
+            with open(freezer_file, "r") as f:
+                data = json.load(f)
+            # extract values of the 3 dictionaries which are in turn lists of dictionaries
+            freezer.foods = data['foods']
+            freezer.units = data['units']
+            freezer.categories = data['categories']
+            # save freezer attributes in session state
+            st.session_state.food_list = freezer.foods
+            st.session_state.unit_list = freezer.units
+            st.session_state.category_list = freezer.categories
+            # st.session_state
 
+        except:
+            # state: App used for the first time
+            st.success("Willkommen bei der ersten Benutzung dieser App!")
+            st.session_state.food_list = []
+            st.session_state.unit_list = []
+            st.session_state.category_list = []
+            # st.session_state
 
-def quit_app(freezer, freezer_file):
-    save_freezer(freezer, freezer_file, FreezerEncoder)
-    del st.session_state.app_initialized
-    st.balloons()
+        finally:
+            st.session_state.app_initialized = True
+
+    else:
+        # state: App was refreshed after data entry
+        # load data from session state
+        freezer.foods = st.session_state.food_list
+        freezer.units = st.session_state.unit_list
+        freezer.categories = st.session_state.category_list
+        # st.session_state
 
 
 def cb_enter_food():
@@ -79,7 +110,7 @@ def cb_enter_food():
 
 
 def enter_food():
-    with st.form("f1", clear_on_submit=False):
+    with st.form("f1", clear_on_submit=True):
         c1, c2, c3 = st.columns([1, 2, 1])
         c1.text_input("Lebensmittelart",
                       placeholder="Gemüse", key="f1_category")
@@ -91,25 +122,43 @@ def enter_food():
         c2.number_input("Packungsgröße", step=25, key="f1_size_initial")
         c3.text_input("Einheit", placeholder="gr", key="f1_unit")
         c1, c2, c3, c4 = st.columns(4)
-        c1.text_input("EAN", max_chars=13, key="ean")
+        c1.text_input("EAN", max_chars=13, key="f1_ean")
         c2.text_input(
             "Eingefroren am:", max_chars=10, placeholder="2022-08-22", key="f1_frozen_on")
         c3.text_input("Haltbar bis:", max_chars=10,
                       placeholder="2022-11-21", key="f1_best_before")
         c4.number_input("Fach", step=1, key="f1_bin")
         # ToDo: validation of food input
-        st.form_submit_button("Speichern", on_click=cb_enter_food)
+        if st.form_submit_button("Speichern", on_click=cb_enter_food):
+            st.success(
+                st.session_state.food_list[-1]['name'] + " wurde der Liste hinzugefügt")
 
 
 def add_food():
     st.header("Einlagern")
     add_type = st.radio("Wie hinzufügen?", [
-                        "Neu", "Duplizieren"], horizontal=True, label_visibility="visible")
-    if add_type == "Neu":
+                        "Eintippen", "Duplizieren"], horizontal=True, label_visibility="visible")
+    if add_type == "Eintippen":
         enter_food()
-        pass
     else:
         pass
+
+
+def cb_remove_food(i):
+    st.success(freezer.foods[i]['name'] + " wurde von der Liste gelöscht")
+    freezer.foods.pop(i)
+    st.session_state.food_list = freezer.foods
+
+
+def remove_food():
+    st.header("Auslagern")
+    foods_index_list = list(range(len(freezer.foods)))
+    i = st.selectbox("Gefriergut auswählen", foods_index_list,
+                     format_func=lambda i: freezer.foods[i].get('name') + " - " + freezer.foods[i].get('brand') + " - " + freezer.foods[i].get('packing') + " - " + str(freezer.foods[i].get('size_remaining'))+"/" + str(freezer.foods[i].get('size_initial')) + " "+freezer.foods[i].get('unit') + " #"+freezer.foods[i].get('frozen_on') + "/ #"+freezer.foods[i].get('best_before')+" --> Fach: "+str(freezer.foods[i].get('bin')))
+    food = Food(**freezer.foods[i])
+    st.write(food.__dict__)
+
+    st.button("Auslagern", on_click=cb_remove_food, args=[i])
 
 
 def edit_food():
@@ -151,62 +200,19 @@ def edit_food():
             st.session_state.food_list = freezer.foods
 
 
-def remove_food():
-    def remove_food_callback(i):
-        freezer.foods.pop(i)
-        st.session_state.food_list = freezer.foods
+def save_freezer(obj, file_name, custom_encoder):
+    with open(file_name, "w") as f:
+        json.dump(obj, f, ensure_ascii=False, indent=4, cls=custom_encoder)
 
-    st.header("Auslagern")
-    foods_index_list = list(range(len(freezer.foods)))
-    i = st.selectbox("Gefriergut auswählen", foods_index_list,
-                     format_func=lambda i: freezer.foods[i].get('name') + " - " + freezer.foods[i].get('brand') + " - " + freezer.foods[i].get('packing') + " - " + str(freezer.foods[i].get('size_remaining'))+"/" + str(freezer.foods[i].get('size_initial')) + " "+freezer.foods[i].get('unit')+" --> Fach: "+str(freezer.foods[i].get('bin')))
-    food = Food(**freezer.foods[i])
-    st.json(food.__dict__)
 
-    st.button("Auslagern", on_click=remove_food_callback, args=[i])
+def quit_app():
+    save_freezer(freezer, freezer_file, FreezerEncoder)
+    del st.session_state.app_initialized
+    st.balloons()
 
 
 def app():
-    # browser tab title & favicon, "st.set_page_config" has to be first streamlit command in script
-    st.set_page_config(
-        page_title="Gefrierschrank", page_icon=":snowflake:")
-    # initialize app
-    if 'app_initialized' not in st.session_state:
-        # stete: App was just opened
-        try:
-            # state: App has been used before with data probably saved to file
-            # load a dictionary from file with the keys 'foods', 'units' and 'categories'
-            with open(freezer_file, "r") as f:
-                data = json.load(f)
-            # extract values of the 3 dictionaries which are in turn lists of dictionaries
-            freezer.foods = data['foods']
-            freezer.units = data['units']
-            freezer.categories = data['categories']
-            # save freezer attributes in session state
-            st.session_state.food_list = freezer.foods
-            st.session_state.unit_list = freezer.units
-            st.session_state.category_list = freezer.categories
-            st.session_state
-
-        except:
-            # state: App used for the first time
-            st.success("Willkommen bei der ersten Benutzung dieser App!")
-            st.session_state.food_list = []
-            st.session_state.unit_list = []
-            st.session_state.category_list = []
-            st.session_state
-
-        finally:
-            st.session_state.app_initialized = True
-
-    else:
-        # state: App was refreshed after data entry
-        # load data from session state
-        freezer.foods = st.session_state.food_list
-        freezer.units = st.session_state.unit_list
-        freezer.categories = st.session_state.category_list
-        # st.session_state
-
+    init_app()
     # page title & header
     st.title("Inhaltsverzeichnis")
     task = st.radio("Was willst Du tun?", [
@@ -220,7 +226,7 @@ def app():
             edit_food()
 
     # end session
-    if st.button("Sitzung speichern & beenden"):
+    if st.button("Sitzung speichern & beenden", type='primary'):
         quit_app()
 
 
