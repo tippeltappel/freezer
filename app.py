@@ -63,11 +63,11 @@ def init_app():
         page_title="Gefrierschrank", page_icon=":snowflake:", initial_sidebar_state="auto")
     # initialize app
     if 'app_initialized' not in st.session_state:
-        # stete: App was just opened
+        # state: App was just opened
         try:
             # state: App has been used before with data probably saved to file
-            # load a dictionary from file with the keys 'foods', 'units' and 'categories'
-            with open(freezer_file, "r") as f:
+            # load a dictionary from file with the keys 'foods', 'units', 'categories' and 'packings'
+            with open(freezer_file, "r",encoding='utf8') as f:
                 data = json.load(f)
             # extract values of the 3 dictionaries which are in turn lists of dictionaries
             freezer.foods = data['foods']
@@ -121,14 +121,17 @@ def cb_enter_food():
     st.session_state.food_list = freezer.foods
 
 
-def enter_food():
-    ranked_categories = sorted(freezer.categories, key=lambda i: i['rank'])
+def enter_food():    
+    ranked_units = sorted(freezer.units, key=lambda x: x['rank'])
+    names_of_ranked_units = [unit['name'] for unit in ranked_units]
+
+    ranked_categories = sorted(freezer.categories, key=lambda x: x['rank'])
     names_of_ranked_categories = [category['name']
                                   for category in ranked_categories]
-    ranked_units = sorted(freezer.units, key=lambda i: i['rank'])
-    names_of_ranked_units = [unit['name'] for unit in ranked_units]
-    ranked_packings = sorted(freezer.packings, key=lambda i: i['rank'])
+   
+    ranked_packings = sorted(freezer.packings, key=lambda x: x['rank'])
     names_of_ranked_packings = [packing['name'] for packing in ranked_packings]
+
     with st.form("f1", clear_on_submit=True):
         c1, c2, c3 = st.columns([1, 2, 1])
         c1.selectbox("Lebensmittelart",
@@ -252,6 +255,8 @@ def cb_edit_settings(setting):
             freezer.units=st.session_state.unit_list
         case "packings":
             freezer.packings=st.session_state.packing_list
+            print(freezer.packings)
+
 
 
 
@@ -269,7 +274,7 @@ def edit_settings():
 
 
 def save_freezer(obj, file_name, custom_encoder):
-    with open(file_name, "w") as f:
+    with open(file_name, "w",encoding='utf8') as f:
         json.dump(obj, f, ensure_ascii=False, indent=4, cls=custom_encoder)
 
 
@@ -285,7 +290,7 @@ def app():
     # page title & header
     st.title("Gefrierschrank")
     task = st.radio("Waas du wollen tuun?", [
-        "Einlagern", "Auslagern", "Bearbeiten","Einstellungen bearbeiten"], horizontal=True, label_visibility="visible")
+        "Einlagern", "Auslagern", "Bearbeiten"], horizontal=True, label_visibility="visible")
     match task:
         case "Einlagern":
             add_food()
@@ -293,8 +298,8 @@ def app():
             remove_food()
         case "Bearbeiten":
             edit_food()
-        case "Einstellungen bearbeiten":
-            edit_settings()    
+        #case "Einstellungen bearbeiten":
+            #edit_settings()    
 
     # end session
     if st.button("Sitzung speichern & beenden", type='primary'):

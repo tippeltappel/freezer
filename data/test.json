@@ -27,19 +27,6 @@
             "bin": "2"
         },
         {
-            "category": "Obst",
-            "name": "Himbeeren",
-            "brand": "brand_a",
-            "packing": "Tüte",
-            "size_initial": 500.0,
-            "size_remaining": 500.0,
-            "unit": "ml",
-            "ean": "1236549871233",
-            "frozen_on": "2022-04-14",
-            "best_before": "2022-07-13",
-            "bin": 4
-        },
-        {
             "category": "Fleisch",
             "name": "Lammkeule",
             "brand": "-",
@@ -66,7 +53,16 @@
             "bin": 2
         }
     ],
-    "units": "[{'name': '-', 'rank': 1}, {'name': 'gr', 'rank': 10}, {'name': 'Stck', 'rank': 20}, {'name': 'ml', 'rank': 30}, {'name': 'l', 'rank': 40}]",
+    "units": [
+        {
+            "name": "gr",
+            "rank": 10
+        },
+        {
+            "name": "Stck",
+            "rank": 20
+        }
+    ],
     "categories": [
         {
             "name": "-",
@@ -74,11 +70,11 @@
         },
         {
             "name": "Pizza",
-            "rank": 10
+            "rank": 20
         },
         {
             "name": "Gemüse",
-            "rank": 20
+            "rank": 10
         },
         {
             "name": "Fisch",
@@ -109,5 +105,26 @@
             "rank": 90
         }
     ],
-    "packings": "[{'name': 'T�te', 'rank': 10}, {'name': 'Box', 'rank': 20}]"
+    "packings": [
+        {
+            "name": "Tüte",
+            "rank": 10
+        },
+        {
+            "name": "Box",
+            "rank": 20
+        },
+        {
+            "name": "Gefrierbeutel",
+            "rank": 30
+        },
+        {
+            "name": "IKEA Glas, quadratisch flach",
+            "rank": 40
+        },
+        {
+            "name": "IKEA Glas, quadratisch hoch",
+            "rank": 50
+        }
+    ]
 }
